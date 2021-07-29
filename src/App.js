@@ -1,23 +1,42 @@
-import logo from './logo.svg';
+import React, {useState,useEffect} from 'react';
 import './App.css';
+import { v4 as uuidv4 } from 'uuid'
+import Header from './componentes/Header'
+import Formulario from './componentes/Formulario'
+import ListaTareas from './componentes/ListaTareas'
 
-function App() {
+const App = ()=> {
+  const tareasGuardadas = 
+  localStorage.getItem('tareas')? 
+  JSON.parse(localStorage.getItem('tareas')) :[]
+
+  const [tareas, agregandoTareas] = useState(tareasGuardadas) 
+
+  useEffect(()=>{
+    localStorage.setItem('tareas',JSON.stringify(tareas))
+  },[tareas])
+
+
+
+  let configMostrarTerminadas = ""
+
+  if (localStorage.getItem('mostrarSeleccionada') === null) {
+    configMostrarTerminadas  = true
+  }else {
+    configMostrarTerminadas = localStorage.getItem('mostrarSeleccionada') === 'true'
+  }
+ 
+  const [mostrarSeleccionada,cambiarMostrarSeleccionada] = useState(configMostrarTerminadas)
+  
+  useEffect(()=>{
+    localStorage.setItem('mostrarSeleccionada',mostrarSeleccionada.toString())
+  },[mostrarSeleccionada])
+
   return (
-    <div className="App">
-      <header className="App-header">
-        <img src={logo} className="App-logo" alt="logo" />
-        <p>
-          Edit <code>src/App.js</code> and save to reload.
-        </p>
-        <a
-          className="App-link"
-          href="https://reactjs.org"
-          target="_blank"
-          rel="noopener noreferrer"
-        >
-          Learn React
-        </a>
-      </header>
+    <div className="contenedor">
+      <Header mostrarSeleccionada={mostrarSeleccionada} cambiarMostrarSeleccionada={cambiarMostrarSeleccionada}/>
+      <Formulario tareas={tareas} agregandoTareas={agregandoTareas}/>
+      <ListaTareas tareas={tareas} agregandoTareas={agregandoTareas} mostrarSeleccionada={mostrarSeleccionada}/>
     </div>
   );
 }
